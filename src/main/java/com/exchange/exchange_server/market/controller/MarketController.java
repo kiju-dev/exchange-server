@@ -1,5 +1,6 @@
 package com.exchange.exchange_server.market.controller;
 
+import com.exchange.exchange_server.market.controller.response.MarketCloseResponse;
 import com.exchange.exchange_server.market.controller.response.MarketOpenResponse;
 import com.exchange.exchange_server.market.service.MarketService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/market/")
+@RequestMapping("/api/v1/market")
 public class MarketController {
 
     private final MarketService marketService;
@@ -20,6 +21,12 @@ public class MarketController {
     @PostMapping("/open")
     public ResponseEntity<MarketOpenResponse> openMarket() {
         MarketOpenResponse response = marketService.openMarket();
+        return ResponseEntity.status(OK).body(response);
+    }
+
+    @PostMapping("/close")
+    public ResponseEntity<MarketCloseResponse> closeMarket() {
+        MarketCloseResponse response = marketService.closeMarket();
         return ResponseEntity.status(OK).body(response);
     }
 }

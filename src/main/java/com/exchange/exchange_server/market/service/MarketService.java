@@ -1,6 +1,7 @@
 package com.exchange.exchange_server.market.service;
 
 import com.exchange.exchange_server.market.ExchangeState;
+import com.exchange.exchange_server.market.controller.response.MarketCloseResponse;
 import com.exchange.exchange_server.market.controller.response.MarketOpenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,10 @@ public class MarketService {
     public MarketOpenResponse openMarket() {
         exchangeState.open();
         return new MarketOpenResponse(exchangeState.getStatus(), LocalDateTime.now());
+    }
+
+    public MarketCloseResponse closeMarket() {
+        exchangeState.close();
+        return new MarketCloseResponse(exchangeState.getStatus(), LocalDateTime.now());
     }
 }
