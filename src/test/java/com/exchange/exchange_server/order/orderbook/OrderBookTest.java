@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 import static com.exchange.exchange_server.order.OrderSide.BUY;
 import static com.exchange.exchange_server.order.OrderSide.SELL;
+import static com.exchange.exchange_server.order.controller.response.MatchResult.CANCELLED;
 import static com.exchange.exchange_server.order.controller.response.MatchResult.MATCHED;
 import static com.exchange.exchange_server.order.controller.response.MatchResult.UNMATCHED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -99,7 +100,7 @@ class OrderBookTest {
 
     @Test
 
-    void 일부만_체결되면_남은_수량은_주문장에_저장된다() {
+    void 일부만_체결되면_남은_수량은_orderBook에_저장된다() {
         // given
         OrderBook orderBook = new OrderBook();
         Order sellOrder = createOrder(1L, SELL, 1000L, 5L);
@@ -123,7 +124,7 @@ class OrderBookTest {
     }
 
     @Test
-    void close를_호출하면_주문장이_초기화된다() {
+    void close를_호출하면_orderBook이_초기화된다() {
         // given
         OrderBook orderBook = new OrderBook();
         Order sellOrder = createOrder(1L, SELL, 1000L, 10L);
@@ -138,6 +139,28 @@ class OrderBookTest {
         assertThat(response.matchResult()).isEqualTo(UNMATCHED);
         assertThat(response.makers()).isEmpty();
         assertThat(response.totalMatchedQuantity()).isZero();
+    }
+
+    @Test
+    void 주문을_취소하면_CANCELLED를_반환하고_orderBook에서_제거된다() {
+        // given
+        OrderBook orderBook = new OrderBook();
+
+        Order sellOrder = createOrder(1L, SELL, 1000L, 10L);
+        Order buyOrder = createOrder(2L, BUY, 1000L, 10L);
+
+        orderBook.place(sellOrder);
+
+        // when
+        OrderResponse cancelResponse = orderBook.cancel(1L);
+        OrderResponse placeResponse = orderBook.place(buyOrder);
+
+        // then
+        assertThat(cancelResponse.matchResult()).isEqualTo(CANCELLED);
+
+        assertThat(placeResponse.matchResult()).isEqualTo(UNMATCHED);
+        assertThat(placeResponse.makers()).isEmpty();
+        assertThat(placeResponse.totalMatchedQuantity()).isZero();
     }
 
     private Order createOrder(

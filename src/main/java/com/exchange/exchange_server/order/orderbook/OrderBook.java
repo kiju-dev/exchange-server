@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.exchange.exchange_server.order.OrderSide.BUY;
+import static com.exchange.exchange_server.order.controller.response.MatchResult.CANCELLED;
 import static com.exchange.exchange_server.order.controller.response.MatchResult.MATCHED;
 import static com.exchange.exchange_server.order.controller.response.MatchResult.UNMATCHED;
 
@@ -26,6 +27,21 @@ public class OrderBook {
             return match(order, sellBook);
         }
         return match(order, buyBook);
+    }
+
+    public OrderResponse cancel(Long orderId) {
+        Order order = orderMap.remove(orderId);
+
+        Map<Long, Deque<Order>> orderBook;
+        if (order.getSide() == BUY) {
+            orderBook = buyBook;
+        } else {
+            orderBook = sellBook;
+        }
+        Deque<Order> orders = orderBook.get(order.getPrice());
+        orders.remove(order);
+
+        return new OrderResponse(CANCELLED, null, List.of(), 0L, 0L);
     }
 
     private OrderResponse match(Order takerOrder, Map<Long, Deque<Order>> makerOrderBook) {

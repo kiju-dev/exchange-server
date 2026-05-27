@@ -2,6 +2,7 @@ package com.exchange.exchange_server.order.service;
 
 import com.exchange.exchange_server.market.ExchangeState;
 import com.exchange.exchange_server.order.Order;
+import com.exchange.exchange_server.order.controller.request.CancelRequest;
 import com.exchange.exchange_server.order.controller.request.OrderRequest;
 import com.exchange.exchange_server.order.controller.response.OrderResponse;
 import com.exchange.exchange_server.order.orderbook.OrderBook;
@@ -21,5 +22,12 @@ public class OrderService {
 
         OrderBook orderBook = orderBookStore.getOrderBook(request.stockId());
         return orderBook.place(Order.from(request));
+    }
+
+    public OrderResponse cancelOrder(CancelRequest request) {
+        exchangeState.validateRunning();
+
+        OrderBook orderBook = orderBookStore.getOrderBook(request.stockId());
+        return orderBook.cancel(request.orderId());
     }
 }

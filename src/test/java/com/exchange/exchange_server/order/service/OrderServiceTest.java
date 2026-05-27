@@ -2,6 +2,7 @@ package com.exchange.exchange_server.order.service;
 
 import com.exchange.exchange_server.market.ExchangeState;
 import com.exchange.exchange_server.order.Order;
+import com.exchange.exchange_server.order.controller.request.CancelRequest;
 import com.exchange.exchange_server.order.controller.request.OrderRequest;
 import com.exchange.exchange_server.order.controller.response.OrderResponse;
 import com.exchange.exchange_server.order.orderbook.OrderBook;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.exchange.exchange_server.order.OrderSide.BUY;
+import static com.exchange.exchange_server.order.controller.response.MatchResult.CANCELLED;
 import static com.exchange.exchange_server.order.controller.response.MatchResult.UNMATCHED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -84,5 +86,30 @@ class OrderServiceTest {
         assertThat(capturedOrder.getQuantity()).isEqualTo(5L);
         assertThat(capturedOrder.getRemainingQuantity()).isEqualTo(5L);
         assertThat(capturedOrder.getSide()).isEqualTo(BUY);
+    }
+
+    @Test
+    void 주문_취소_요청_시_장_상태를_검증하고_orderbook에_취소를_위임한다() {
+        // given
+        CancelRequest request = new CancelRequest(10L, 1L, BUY, 10000L);
+
+        OrderResponse expectedResponse =
+                new OrderResponse(CANCELLED, null, List.of(), 0L, 0L);
+
+        given(orderBookStore.getOrderBook(request.stockId()))
+                .willReturn(orderBook);
+
+        given(orderBook.cancel(request.orderId()))
+                .willReturn(expectedResponse);
+
+        // when
+        OrderResponse response = orderService.cancelOrder(request);
+
+        // then
+        assertThat(response).isEqualTo(expectedResponse);
+
+        verify(exchangeState).validateRunning();
+        verify(orderBookStore).getOrderBook(1L);
+        verify(orderBook).cancel(10L);
     }
 }
