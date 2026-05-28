@@ -4,6 +4,7 @@ import com.exchange.exchange_server.market.ExchangeState;
 import com.exchange.exchange_server.order.Order;
 import com.exchange.exchange_server.order.controller.request.CancelRequest;
 import com.exchange.exchange_server.order.controller.request.OrderRequest;
+import com.exchange.exchange_server.order.controller.response.OrderBookResponse;
 import com.exchange.exchange_server.order.controller.response.OrderResponse;
 import com.exchange.exchange_server.order.orderbook.OrderBook;
 import com.exchange.exchange_server.order.orderbook.OrderBookStore;
@@ -29,5 +30,12 @@ public class OrderService {
 
         OrderBook orderBook = orderBookStore.getOrderBook(request.stockId());
         return orderBook.cancel(request.orderId());
+    }
+
+    public OrderBookResponse getOrderBook(Long stockId) {
+        exchangeState.validateRunning();
+
+        OrderBook orderBook = orderBookStore.getOrderBook(stockId);
+        return orderBook.getOrderBook();
     }
 }

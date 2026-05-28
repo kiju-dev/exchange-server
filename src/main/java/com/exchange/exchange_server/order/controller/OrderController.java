@@ -2,11 +2,14 @@ package com.exchange.exchange_server.order.controller;
 
 import com.exchange.exchange_server.order.controller.request.CancelRequest;
 import com.exchange.exchange_server.order.controller.request.OrderRequest;
+import com.exchange.exchange_server.order.controller.response.OrderBookResponse;
 import com.exchange.exchange_server.order.controller.response.OrderResponse;
 import com.exchange.exchange_server.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +33,12 @@ public class OrderController {
     @DeleteMapping("/order")
     public ResponseEntity<OrderResponse> cancel(@RequestBody CancelRequest request) {
         OrderResponse response = orderService.cancelOrder(request);
+        return ResponseEntity.status(OK).body(response);
+    }
+
+    @GetMapping("/orderbook/{stockId}")
+    public ResponseEntity<OrderBookResponse> getOrderBook(@PathVariable Long stockId) {
+        OrderBookResponse response = orderService.getOrderBook(stockId);
         return ResponseEntity.status(OK).body(response);
     }
 }

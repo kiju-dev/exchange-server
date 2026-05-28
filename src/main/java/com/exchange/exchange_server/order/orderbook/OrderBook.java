@@ -2,7 +2,10 @@ package com.exchange.exchange_server.order.orderbook;
 
 import com.exchange.exchange_server.order.Order;
 import com.exchange.exchange_server.order.controller.response.MatchedMakerOrder;
+import com.exchange.exchange_server.order.controller.response.OrderBookResponse;
 import com.exchange.exchange_server.order.controller.response.OrderResponse;
+import com.exchange.exchange_server.order.controller.response.OrderSummary;
+import com.exchange.exchange_server.order.controller.response.PriceLevel;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -42,6 +45,30 @@ public class OrderBook {
         orders.remove(order);
 
         return new OrderResponse(CANCELLED, null, List.of(), 0L, 0L);
+    }
+
+    public OrderBookResponse getOrderBook() {
+        Map<Long, PriceLevel> buyPriceLevelMap = getPriceLevelMap(buyBook);
+        Map<Long, PriceLevel> sellPriceLevelMap = getPriceLevelMap(sellBook);
+
+        return new OrderBookResponse(buyPriceLevelMap, sellPriceLevelMap);
+    }
+
+    private Map<Long, PriceLevel> getPriceLevelMap(Map<Long, Deque<Order>> orderBook) {
+        Map<Long, PriceLevel> priceLevelList = new HashMap<>();
+        for (Map.Entry<Long, Deque<Order>> entry : orderBook.entrySet()) {
+            long price = entry.getKey();
+            Deque<Order> orders = entry.getValue();
+            long totalQuantity = 0L;
+            List<OrderSummary> orderSummaryList = new ArrayList<>();
+
+            for (Order order : orders) {
+                totalQuantity += order.getRemainingQuantity();
+                orderSummaryList.add(new OrderSummary(order.getOrderId(), order.getRemainingQuantity(), order.getCreatedAt()));
+            }
+            priceLevelList.put(price, new PriceLevel(totalQuantity, orderSummaryList));
+        }
+        return priceLevelList;
     }
 
     private OrderResponse match(Order takerOrder, Map<Long, Deque<Order>> makerOrderBook) {
