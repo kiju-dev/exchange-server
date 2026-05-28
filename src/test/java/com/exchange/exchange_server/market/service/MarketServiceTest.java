@@ -3,6 +3,7 @@ package com.exchange.exchange_server.market.service;
 import com.exchange.exchange_server.market.ExchangeState;
 import com.exchange.exchange_server.market.controller.response.MarketCloseResponse;
 import com.exchange.exchange_server.market.controller.response.MarketOpenResponse;
+import com.exchange.exchange_server.order.orderbook.OrderBookStore;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,9 @@ class MarketServiceTest {
 
     @Mock
     private ExchangeState exchangeState;
+
+    @Mock
+    private OrderBookStore orderBookStore;
 
     @InjectMocks
     private MarketService marketService;

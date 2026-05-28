@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import static com.exchange.exchange_server.global.exception.ErrorCode.MARKET_ALREADY_CLOSE;
 import static com.exchange.exchange_server.global.exception.ErrorCode.MARKET_ALREADY_OPEN;
+import static com.exchange.exchange_server.global.exception.ErrorCode.MARKET_NOT_OPEN;
 import static com.exchange.exchange_server.market.controller.response.ExchangeStatus.RUNNING;
 import static com.exchange.exchange_server.market.controller.response.ExchangeStatus.STOPPED;
 
@@ -32,5 +33,11 @@ public class ExchangeState {
             throw new CustomException(MARKET_ALREADY_CLOSE);
         }
         status = STOPPED;
+    }
+
+    public void validateRunning() {
+        if (status != RUNNING) {
+            throw new CustomException(MARKET_NOT_OPEN);
+        }
     }
 }

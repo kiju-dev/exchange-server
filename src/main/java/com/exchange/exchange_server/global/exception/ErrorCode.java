@@ -8,6 +8,8 @@ public enum ErrorCode {
     MARKET_ALREADY_OPEN(HttpStatus.CONFLICT, "MARKET_001", "이미 개장 상태입니다."),
     MARKET_ALREADY_CLOSE(HttpStatus.CONFLICT, "MARKET_002", "이미 폐장 상태입니다."),
 
+    MARKET_NOT_OPEN(HttpStatus.BAD_REQUEST, "ORDER_001", "개장 시에만 주문이 가능합니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER_001", "서버 내부에 오류가 발생했습니다."),
     ;
 
